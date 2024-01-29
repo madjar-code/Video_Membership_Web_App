@@ -1,0 +1,7 @@
+# virtual environment
+Lib/
+Scripts/
+Include/
+
+# cache
+__pycache__
