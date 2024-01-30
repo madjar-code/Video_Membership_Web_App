@@ -2,6 +2,10 @@
 Lib/
 Scripts/
 Include/
+.env
 
 # cache
 __pycache__
+
+# connection credentials
+unencrypted
