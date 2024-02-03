@@ -17,7 +17,7 @@ def valid_schema_data_or_error(
 
     data = dict()
     errors = list()
-    error_str = ''
+    error_str = None
     try:
         cleaned_data = SchemaModel(**raw_data)
         data = cleaned_data.dict()
