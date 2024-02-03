@@ -1,12 +1,13 @@
 import pathlib
-from fastapi import FastAPI, Request, Form
+from fastapi import FastAPI, Request, Form, HTTPException
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from cassandra.cqlengine.management import sync_table
-from .shortcuts import render
+from .shortcuts import render, redirect
 from . import db
 from .utils import valid_schema_data_or_error
 from .users.models import User
+from .users.decorators import login_required
 from .users.schemas import (
     UserSignupSchema,
     UserLoginSchema,
@@ -19,6 +20,8 @@ TEMPLATE_DIR = BASE_DIR / 'templates'
 app = FastAPI()
 templates = Jinja2Templates(directory=str(TEMPLATE_DIR))
 
+from .handlers import *
+
 
 @app.on_event('startup')
 def on_startup():
@@ -30,6 +33,13 @@ def on_startup():
 @app.get('/',  response_class=HTMLResponse)
 def homepage(request: Request):
     return render(request, 'home.html', {'abc': 'rqw'})
+
+
+@app.get('/account',  response_class=HTMLResponse)
+@login_required
+def account_view(request: Request):    
+    context = dict()
+    return render(request, 'account.html', context)
 
 
 @app.get('/login',  response_class=HTMLResponse)
@@ -63,12 +73,7 @@ def login_post_view(
             },
             400,
         )
-    return render(
-        request,
-        'auth/login.html',
-        {'logged_in': True},
-        cookies=data
-    )
+    return redirect('/', cookies=data)
 
 
 @app.get('/signup',  response_class=HTMLResponse)
@@ -93,19 +98,12 @@ def signup_post_view(
         UserSignupSchema
     )
     if len(errors) > 0:
-        status_code = 400
-    else:
-        status_code = 200
-
-    return render(
-        request,
-        'auth/signup.html',
-        {
-            'data': data,
-            'errors': errors,
-        },
-        status_code=status_code,
-    )
+        return render(
+            request,
+            'auth/signup.html',
+            status_code=400
+        )
+    return redirect('/login')
 
 
 @app.get('/users')
