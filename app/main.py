@@ -15,6 +15,7 @@ from .users.schemas import (
     UserSignupSchema,
     UserLoginSchema,
 )
+from .videos.models import Video
 
 
 BASE_DIR = pathlib.Path(__file__).resolve().parent
@@ -34,6 +35,7 @@ from .handlers import *
 def on_startup():
     global DB_SESSION
     DB_SESSION = db.get_session()
+    sync_table(Video)
     sync_table(User)
 
 
