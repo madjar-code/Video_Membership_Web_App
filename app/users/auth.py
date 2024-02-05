@@ -37,7 +37,7 @@ def login(user_obj, expires=5):
 
 def verify_user_id(token):
     # step 3
-    data = None
+    data = dict()
     try:
         data = jwt.decode(
             token,
