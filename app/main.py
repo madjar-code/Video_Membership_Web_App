@@ -1,9 +1,12 @@
 import pathlib
-from fastapi import FastAPI, Request, Form, HTTPException
+from fastapi import FastAPI, Request, Form
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+from starlette.middleware.authentication import AuthenticationMiddleware
+from starlette.authentication import requires
 from cassandra.cqlengine.management import sync_table
 from .shortcuts import render, redirect
+from .users.backends import JWTCookieBackend
 from . import db
 from .utils import valid_schema_data_or_error
 from .users.models import User
@@ -18,6 +21,10 @@ BASE_DIR = pathlib.Path(__file__).resolve().parent
 TEMPLATE_DIR = BASE_DIR / 'templates'
 
 app = FastAPI()
+app.add_middleware(
+    AuthenticationMiddleware,
+    backend=JWTCookieBackend()
+)
 templates = Jinja2Templates(directory=str(TEMPLATE_DIR))
 
 from .handlers import *
@@ -31,7 +38,15 @@ def on_startup():
 
 
 @app.get('/',  response_class=HTMLResponse)
+@requires(['anon'])
 def homepage(request: Request):
+    if request.user.is_authenticated:
+        return render(
+            request,
+            'dashboard.html',
+            {},
+            status_code=200
+        )
     return render(request, 'home.html', {'abc': 'rqw'})
 
 
