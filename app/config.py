@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     secret_key: str = Field(..., alias='SECRET_KEY')
     jwt_algorithm: str = Field(default='HS256')
     model_config = SettingsConfigDict(env_file='.env')
+    session_duration: int = Field(default=86400, alias='SESSION_DURATION')
 
 
 @lru_cache
