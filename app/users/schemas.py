@@ -11,7 +11,7 @@ from .models import User
 
 class UserLoginSchema(BaseModel):
     email: EmailStr
-    password: SecretStr
+    password: str
     session_id: str = None
 
     @root_validator(pre=True, skip_on_failure=True)
