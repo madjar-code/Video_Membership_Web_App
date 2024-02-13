@@ -1,5 +1,5 @@
 import uuid
-from typing import Optional
+from typing import Optional, Dict
 from uuid import UUID
 from pydantic import HttpUrl
 from cassandra.cqlengine import columns
@@ -29,8 +29,11 @@ class Video(Model):
     def __str__(self) -> str:
         return self.__repr__()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Video(title={self.title}, host_id={self.host_id}, host_service={self.host_service})"
+
+    def as_data(self) -> Dict[str, str]:
+        return {f'{self.host_id}_id': self.host_id}
 
     @staticmethod
     def add_video(
