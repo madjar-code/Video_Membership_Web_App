@@ -33,7 +33,14 @@ class Video(Model):
         return f"Video(title={self.title}, host_id={self.host_id}, host_service={self.host_service})"
 
     def as_data(self) -> Dict[str, str]:
-        return {f'{self.host_id}_id': self.host_id}
+        return {
+            f'{self.host_id}_id': self.host_id,
+            'path': self.path,
+        }
+
+    @property
+    def path(self) -> str:
+        return f'/videos/{self.host_id}'
 
     @staticmethod
     def add_video(
